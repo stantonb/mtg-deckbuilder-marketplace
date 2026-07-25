@@ -1,0 +1,11 @@
+{
+  "name": "mtg-deckbuilder",
+  "description": "Build, validate and playtest professional-quality MTG decks using only cards you own. Parses collection CSV exports, verifies every card via Scryfall (cache-first, never from model memory), enforces format legality and ownership gates, runs a Monte Carlo goldfish simulator, and delivers Moxfield-importable decklists plus a self-contained HTML report.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Stanton Borthwick",
+    "email": "stanton.borthwick@simplybusiness.co.uk"
+  },
+  "license": "MIT",
+  "keywords": ["mtg", "magic-the-gathering", "deckbuilding", "moxfield", "scryfall", "playtesting"]
+}
