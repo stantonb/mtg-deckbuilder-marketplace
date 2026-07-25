@@ -1,7 +1,9 @@
 # HTML Report Specification
 
 One single self-contained HTML file per run, covering ALL requested decks.
-Save it in the project directory as `<Run Name> Deck Report <YYYYMMDD-HHMMSS>.html`
+Save it inside the run's output folder (`$OUT` from SKILL.md — the folder
+that also holds the exported decklists) as
+`<Run Name> Deck Report <YYYYMMDD-HHMMSS>.html`
 (timestamped — re-runs must never overwrite earlier reports).
 
 ## Self-contained means self-contained

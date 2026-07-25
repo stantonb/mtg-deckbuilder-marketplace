@@ -17,8 +17,15 @@ replaced on updates). Set once at the start:
 
 ```bash
 SKILL="<this skill's base directory — shown when the skill loads>"
-WORK=$(mktemp -d)   # intermediates; final outputs go in the project dir
+WORK=$(mktemp -d)   # intermediates only — never shown to the user
+OUT="<project dir>/<Run Name> Deck Build $(date +%Y%m%d-%H%M%S)"
+mkdir -p "$OUT"     # ALL final deliverables (decklists + report) go here
 ```
+
+Every run gets its own output folder (`$OUT` above) inside the project
+directory — decklists and the report always land together, and re-runs
+never overwrite or scatter files. Pick a short descriptive Run Name
+("ECL League Pair", "Casual 60 Rebuild").
 
 ## Two iron rules
 
@@ -107,11 +114,11 @@ section. First builds that survive untouched are rare; say why if so.
 ## Step 6 — Deliver
 
 1. **Decklists**: re-run each final deck's `validate_deck.py` with
-   `--export-dir "<project dir>" --deck-name "<Deck Name>"` (and the ledger
+   `--export-dir "$OUT" --deck-name "<Deck Name>"` (and the ledger
    if simultaneous). This writes the timestamped Moxfield-importable
-   `.txt` (`N Card Name (SET) collector-number`). Also show each list in
-   chat in the same format.
-2. **HTML report**: one self-contained file per run following
+   `.txt` (`N Card Name (SET) collector-number`) into the run folder.
+   Also show each list in chat in the same format.
+2. **HTML report**: one self-contained file per run, saved in `$OUT`, following
    `references/report-spec.md` exactly — decisions, near-miss cuts, charts,
    full goldfish numbers, sample-game lessons, matchup grid vs the six
    standard archetypes, iteration log, and (N > 1) ranked comparison +
@@ -128,6 +135,8 @@ section. First builds that survive untouched are rare; say why if so.
 - [ ] Land count/curve match method targets or the report explains why not
 - [ ] Decklist .txt files exported (timestamped) + shown in chat
 - [ ] Report is one file, opens offline, all sections present
+- [ ] Everything delivered inside the run's output folder (`$OUT`), and the
+      user told its path
 
 ## Troubleshooting
 
