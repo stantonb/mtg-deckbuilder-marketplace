@@ -1,0 +1,45 @@
+{
+  "skill_name": "mtg-commander",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Here's my Moxfield collection export: evals/files/collection.csv. I want a Commander deck for a casual bracket-2 pod. I don't have a commander in mind \u2014 pick the one my cards support best, build the 100, and goldfish it.",
+      "expected_output": "A shortlist of owned legendary candidates with pool-scoring, one chosen commander, a 100-card singleton list within colour identity that passes validate_deck.py --format commander, deck_audit package counts, goldfish run with --commander, Moxfield .txt export and a self-contained HTML report including package table, mana allocation and bracket self-assessment.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": [
+        "A '<Run Name> Deck Build <timestamp>' run folder exists in the project directory",
+        "Exactly one HTML report was produced",
+        "Report is self-contained (no external src/href to http(s) resources)",
+        "A Moxfield-importable decklist .txt was exported",
+        "Report contains goldfish playtest statistics (keepable-hand and mulligan rates)",
+        "Report has an iteration log section",
+        "Report narrates sample games including a hostile scenario",
+        "Report contains a matchups section",
+        "Report lists cards that just missed the cut",
+        "transcript.md records running validate_deck.py and goldfish.py",
+        "Deck is exactly 100 cards",
+        "List passes validate_deck.py --format commander for a legendary creature it contains (100, singleton, colour identity, owned)",
+        "Land count is in the Commander range 33-42",
+        "Report presents a commander shortlist / candidates with pool evidence",
+        "Report has a package table (ramp / card advantage / interaction ...)",
+        "Report has a mana allocation table using pip shares",
+        "Report has a bracket self-assessment",
+        "Report gives commander cast-turn statistics from the goldfish",
+        "Sample games are four-player pod narratives",
+        "transcript.md records goldfish.py run with --commander",
+        "transcript.md records running deck_audit.py"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build a mono-red Commander deck around Living Lightning, Charged Up from my collection (evals/files/collection.csv). Casual power, no infinite combos. Give me the list and a report.",
+      "expected_output": "A 100-card mono-red list with Living Lightning as commander that passes the commander gates, with package/mana analysis, goldfish numbers and pod-game narratives in the report.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": []
+    }
+  ]
+}

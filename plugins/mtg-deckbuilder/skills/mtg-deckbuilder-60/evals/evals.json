@@ -1,0 +1,43 @@
+{
+  "skill_name": "mtg-deckbuilder-60",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a 60-card kitchen-table deck from my Moxfield collection export at evals/files/collection.csv. I mostly play casual 1v1 with friends, no sideboard needed. Pick whatever colours the collection supports best and playtest it.",
+      "expected_output": "One exactly-60-card decklist (Moxfield-importable .txt) plus a single self-contained HTML report in a run folder; the deck passes validate_deck.py with --deck-size 60, has a 4-of-heavy constructed shape (~22-26 lands, bell curve), goldfish statistics and narrated games, copy-count rationale and land math sections.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": [
+        "A '<Run Name> Deck Build <timestamp>' run folder exists in the project directory",
+        "Exactly one HTML report was produced",
+        "Report is self-contained (no external src/href to http(s) resources)",
+        "A Moxfield-importable decklist .txt was exported",
+        "Report contains goldfish playtest statistics (keepable-hand and mulligan rates)",
+        "Report has an iteration log section",
+        "Report narrates sample games including a hostile scenario",
+        "Report contains a matchups section",
+        "Report lists cards that just missed the cut",
+        "transcript.md records running validate_deck.py and goldfish.py",
+        "Main deck is exactly 60 cards",
+        "Exported list passes validate_deck.py --format kitchen --deck-size 60 (ownership, copies, size)",
+        "No sideboard (user asked for none)",
+        "Land count is in the constructed range 20-27",
+        "Constructed shape: at least 4 distinct nonbasic cards run as 4-ofs",
+        "Report has a copy-count rationale section (why each card's count)",
+        "Report has a land-math section with hypergeometric odds",
+        "Report states which format the list is legal in / legality snapshot",
+        "transcript.md records running deck_audit.py"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Using my collection (evals/files/collection.csv, Moxfield export), make me a Standard-legal 60-card deck with a 15-card sideboard and tell me how to sideboard against aggro and control.",
+      "expected_output": "A 60 + 15 Standard-legal list validated by the cache's legalities field, sideboard guide table with In/Out per archetype, exported decklist and HTML report.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": []
+    }
+  ]
+}

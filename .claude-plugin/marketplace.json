@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Magic: The Gathering deckbuilding tools for Claude Code",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "mtg-deckbuilder",
       "source": "./plugins/mtg-deckbuilder",
-      "description": "Build, validate and playtest professional-quality MTG decks using only cards you own: collection CSV parsing (Moxfield/Archidekt/Deckbox/ManaBox), Scryfall-verified card data with a shared cache, format-aware quality gates, a Monte Carlo goldfish simulator, Moxfield-ready decklists and self-contained HTML reports.",
-      "version": "1.1.0",
+      "description": "Three skills that build, validate and playtest professional-quality MTG decks using only cards you own: mtg-deckbuilder (40-card limited), mtg-deckbuilder-60 (Standard/Modern/Pioneer/Legacy/Pauper/casual 60) and mtg-commander (Commander/EDH with package-based construction and bracket assessment). Shared toolkit: collection CSV parsing (Moxfield/Archidekt/Deckbox/ManaBox), Scryfall-verified card data with a shared cache, format-aware quality gates, a role/package audit, a command-zone-aware Monte Carlo goldfish simulator, Moxfield-ready decklists and self-contained HTML reports.",
+      "version": "1.2.0",
       "author": {
         "name": "Stanton Borthwick",
         "email": "stanton.borthwick@simplybusiness.co.uk"
@@ -25,7 +25,11 @@
         "deckbuilding",
         "moxfield",
         "scryfall",
-        "playtesting"
+        "playtesting",
+        "commander",
+        "edh",
+        "standard",
+        "modern"
       ],
       "category": "gaming"
     }

@@ -1,7 +1,7 @@
 {
   "name": "mtg-deckbuilder",
-  "description": "Build, validate and playtest professional-quality MTG decks using only cards you own. Parses collection CSV exports, verifies every card via Scryfall (cache-first, never from model memory), enforces format legality and ownership gates, runs a Monte Carlo goldfish simulator, and delivers Moxfield-importable decklists plus a self-contained HTML report.",
-  "version": "1.1.0",
+  "description": "Build, validate and playtest professional-quality MTG decks using only cards you own \u2014 three skills: 40-card limited (mtg-deckbuilder), 60-card constructed (mtg-deckbuilder-60) and Commander/EDH (mtg-commander). Parses collection CSV exports, verifies every card via Scryfall (cache-first, never from model memory), enforces format legality and ownership gates, audits functional packages, runs a Monte Carlo goldfish simulator (command-zone and ramp aware), and delivers Moxfield-importable decklists plus a self-contained HTML report.",
+  "version": "1.2.0",
   "author": {
     "name": "Stanton Borthwick",
     "email": "stanton.borthwick@simplybusiness.co.uk"
@@ -13,6 +13,10 @@
     "deckbuilding",
     "moxfield",
     "scryfall",
-    "playtesting"
+    "playtesting",
+    "commander",
+    "edh",
+    "standard",
+    "modern"
   ]
 }

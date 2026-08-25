@@ -1,7 +1,8 @@
 # Format Rules
 
 validate_deck.py enforces all of this mechanically; this file is the human
-reference. Legality always comes from the cached Scryfall `legalities`
+reference shared by all three skills (mtg-deckbuilder for limited,
+mtg-deckbuilder-60 for 60-card constructed, mtg-commander for Commander). Legality always comes from the cached Scryfall `legalities`
 field — never from memory (post-cutoff sets and recent bannings make memory
 wrong).
 
