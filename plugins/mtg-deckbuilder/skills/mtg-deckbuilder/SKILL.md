@@ -1,13 +1,20 @@
 ---
 name: mtg-deckbuilder
-description: "Use when the user wants Magic: The Gathering decks built, rebuilt, evaluated or playtested from cards they own — 'build me a deck', 'make N decks from my collection', 'deckbuild from this CSV', a Moxfield/Archidekt/Deckbox/ManaBox export, sealed/league pool, Commander/Standard/Modern/Pauper brews, goldfish or playtest requests, deck reports, or checking decklists against a collection. Use it even for quick deck questions if a collection file is in play."
+description: "Use when the user wants a 40-card Limited Magic: The Gathering deck — league, sealed, draft, prerelease, a set-restricted pool, or any 40-card build — built, rebuilt, evaluated or playtested from cards they own ('build me two 40-card league decks from my Moxfield export', 'what can I make from this sealed pool CSV', 'check my 40-card list against my collection'). Also use it for quick 40-card deck questions whenever a collection file is in play. For 60-card constructed use mtg-deckbuilder-60; for Commander/EDH use mtg-commander — this skill hosts the shared scripts and card cache those two rely on."
 ---
 
-# MTG Deckbuilder
+# MTG Deckbuilder — 40-card Limited
 
-Builds professional-quality Magic: The Gathering decks **using only cards the
-user owns**, playtests them with a Monte Carlo simulator plus narrated games,
-and delivers Moxfield-ready decklists and a self-contained HTML report.
+Builds professional-quality 40-card Limited decks (league, sealed, draft,
+set-restricted pools) **using only cards the user owns**, playtests them with
+a Monte Carlo simulator plus narrated games, and delivers Moxfield-ready
+decklists and a self-contained HTML report.
+
+This skill also hosts the toolkit shared by its siblings: `mtg-deckbuilder-60`
+(60-card constructed) and `mtg-commander` (Commander/EDH) reference the
+scripts, cache and references in this directory. If the request is really a
+60-card or Commander build, switch to that skill — it carries the
+format-specific method and report sections.
 
 Scripts live in `scripts/` (run with `python3`, stdlib only, work from any
 directory). The card cache `MTG_Card_Cache.json` lives in THIS skill
@@ -45,9 +52,10 @@ never overwrite or scatter files. Pick a short descriptive Run Name
 Ask for whatever is missing (defaults in parentheses):
 
 1. Collection CSV path (required)
-2. Format (required): commander/standard/modern/pioneer/legacy/pauper/
-   limited (league, sealed)/kitchen table — see `references/formats.md`
-3. Deck size override (format default)
+2. Format (required): `limited` (aliases league, sealed, draft) — see
+   `references/formats.md`. Other formats are handled by the sibling skills
+   but the scripts accept them all.
+3. Deck size override (40) — only if the event says otherwise
 4. Restrictions, freeform (none): set-only, rarity caps, color caps,
    must-includes, ban list
 5. Number of decks (1)
@@ -92,6 +100,16 @@ deck's validate call, and export decks in build order (the ledger charges
 copies on export). Shared pool: no ledger. Fix every FAIL and re-run until
 clean — do not rationalize a failure away.
 
+Then the advisory role audit — it counts lands, interaction, card advantage
+and creatures from verified oracle text against the 40-card targets and
+prints each card's detected roles (keyword heuristics; override a misread,
+but explain any range you leave outside the target in the report):
+
+```bash
+python3 $SKILL/scripts/deck_audit.py --deck $WORK/deck1.txt \
+  --enriched $WORK/enriched.json --template limited
+```
+
 ## Step 4 — Playtest (both parts required)
 
 ```bash
@@ -129,6 +147,7 @@ section. First builds that survive untouched are rare; say why if so.
 ## Final checklist before showing output
 
 - [ ] validate_deck.py PASS for every deck (with ledger if simultaneous)
+- [ ] deck_audit.py run; out-of-range counts fixed or justified
 - [ ] Zero cards included on remembered stats (all cache-verified)
 - [ ] goldfish.py ran; its numbers appear in the report
 - [ ] Sample games narrated (incl. one hostile)
