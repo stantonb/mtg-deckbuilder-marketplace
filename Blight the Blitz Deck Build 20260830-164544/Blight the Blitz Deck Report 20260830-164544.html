@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<style>img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Blight the Blitz</title>
+<style>
+  :root{
+    --paper:#EFF1E7;
+    --surface:#E5E9D9;
+    --surface-2:#DBE0CC;
+    --ink:#171A11;
+    --ink-soft:#3D442F;
+    --muted:#6C7360;
+    --rule:#C6CDB2;
+    --moss:#54742A;
+    --moss-soft:#EAEFD6;
+    --plum:#7A3B57;
+    --plum-soft:#F2E4EA;
+    --pass:#3F6B33;
+    --warn:#8A6410;
+    --fail:#95392B;
+    --shadow:0 1px 0 rgba(23,26,17,.06);
+    --serif:Georgia,"Iowan Old Style","Source Serif Pro",Cambria,"Times New Roman",serif;
+    --sans:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#111309;
+      --surface:#191D11;
+      --surface-2:#232817;
+      --ink:#E6EAD8;
+      --ink-soft:#C0C7AC;
+      --muted:#8A9179;
+      --rule:#333A24;
+      --moss:#9CC148;
+      --moss-soft:#232C13;
+      --plum:#D095AE;
+      --plum-soft:#2C1B23;
+      --pass:#7FB56A;
+      --warn:#D2A33F;
+      --fail:#E08272;
+      --shadow:0 1px 0 rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111309;
+    --surface:#191D11;
+    --surface-2:#232817;
+    --ink:#E6EAD8;
+    --ink-soft:#C0C7AC;
+    --muted:#8A9179;
+    --rule:#333A24;
+    --moss:#9CC148;
+    --moss-soft:#232C13;
+    --plum:#D095AE;
+    --plum-soft:#2C1B23;
+    --pass:#7FB56A;
+    --warn:#D2A33F;
+    --fail:#E08272;
+    --shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:17px;
+    line-height:1.62;
+    margin:0;
+    padding:0 24px 96px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  .col{max-width:68ch}
+
+  /* ---- masthead ---- */
+  .mast{padding:56px 0 28px;border-bottom:2px solid var(--ink)}
+  .kicker{
+    font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--moss);margin:0 0 14px;
+  }
+  h1{
+    font-family:var(--serif);font-weight:700;font-size:clamp(38px,6vw,64px);
+    line-height:1.02;letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance;
+  }
+  .dek{font-size:20px;line-height:1.5;color:var(--ink-soft);margin:0 0 26px;max-width:60ch;text-wrap:balance}
+
+  .facts{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:8px;
+  }
+  .fact{background:var(--paper);padding:12px 14px}
+  .fact dt{
+    font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 4px;
+  }
+  .fact dd{margin:0;font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+
+  /* ---- sections ---- */
+  section{padding-top:52px}
+  h2{
+    font-family:var(--serif);font-size:29px;font-weight:700;letter-spacing:-.01em;
+    margin:0 0 6px;text-wrap:balance;
+  }
+  h2 + .sub{
+    font-family:var(--sans);font-size:13px;color:var(--muted);margin:0 0 22px;
+    padding-bottom:14px;border-bottom:1px solid var(--rule);
+  }
+  h3{font-family:var(--serif);font-size:20px;font-weight:700;margin:32px 0 8px}
+  h4{font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
+  p{margin:0 0 16px}
+  ul,ol{margin:0 0 16px;padding-left:22px}
+  li{margin-bottom:7px}
+  a{color:var(--moss)}
+  strong{font-weight:700}
+  .lede{font-size:19px;color:var(--ink-soft)}
+
+  /* ---- pips ---- */
+  .pip{
+    display:inline-block;width:1.05em;height:1.05em;border-radius:50%;
+    vertical-align:-.16em;margin-right:.3em;border:1px solid rgba(0,0,0,.18);
+  }
+  .pip-b{background:var(--plum)}
+  .pip-g{background:var(--moss)}
+
+  /* ---- decklist ---- */
+  .listwrap{border:1px solid var(--rule);background:var(--surface);margin:22px 0}
+  .listbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:10px 14px;border-bottom:1px solid var(--rule);
+    font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  button.copy{
+    font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--paper);background:var(--ink);
+    border:0;padding:7px 13px;cursor:pointer;
+  }
+  button.copy:hover{background:var(--moss)}
+  button.copy:focus-visible{outline:2px solid var(--moss);outline-offset:2px}
+  pre.deck{
+    margin:0;padding:16px 14px;font-family:var(--mono);font-size:13px;line-height:1.72;
+    columns:3;column-gap:28px;overflow-x:auto;color:var(--ink);
+  }
+  @media (max-width:820px){pre.deck{columns:2}}
+  @media (max-width:520px){pre.deck{columns:1}}
+
+  /* ---- tables ---- */
+  .scroll{overflow-x:auto;margin:18px 0;border:1px solid var(--rule)}
+  table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14px;background:var(--surface)}
+  caption{
+    caption-side:top;text-align:left;font-family:var(--sans);font-size:12px;
+    color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+  }
+  th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+  thead th{
+    font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);background:var(--surface-2);white-space:nowrap;
+  }
+  tbody tr:last-child td{border-bottom:0}
+  td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  td.name{font-weight:600;white-space:nowrap}
+  .miss{color:var(--fail);font-weight:700}
+  .ok{color:var(--pass);font-weight:700}
+  .cap{color:var(--warn);font-weight:700}
+
+  /* ---- chips ---- */
+  .chip{
+    display:inline-block;font-family:var(--sans);font-size:11px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border:1px solid currentColor;
+    white-space:nowrap;
+  }
+  .chip-fav{color:var(--pass)}
+  .chip-even{color:var(--warn)}
+  .chip-unf{color:var(--fail)}
+
+  /* ---- charts ---- */
+  .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin-top:22px}
+  .chart{border:1px solid var(--rule);background:var(--surface);padding:16px}
+  .chart h4{margin:0 0 14px}
+  .bar-row{display:grid;grid-template-columns:56px 1fr 34px;align-items:center;gap:10px;margin-bottom:7px}
+  .bar-lab{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .bar-track{background:var(--surface-2);height:15px}
+  .bar-fill{height:15px;background:var(--moss)}
+  .bar-fill.plum{background:var(--plum)}
+  .bar-val{font-family:var(--mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+
+  /* ---- callouts ---- */
+  .note{
+    border-left:3px solid var(--moss);background:var(--moss-soft);
+    padding:14px 18px;margin:22px 0;font-size:16px;
+  }
+  .note.warn{border-left-color:var(--plum);background:var(--plum-soft)}
+  .note p:last-child{margin-bottom:0}
+  .note h4{margin-top:0}
+
+  .game{border-top:1px solid var(--rule);padding-top:18px;margin-top:24px}
+  .game .lesson{font-family:var(--sans);font-size:14px;color:var(--ink-soft)}
+  .game .lesson b{font-family:var(--sans);color:var(--moss);letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+
+  footer{margin-top:64px;padding-top:20px;border-top:2px solid var(--ink);font-family:var(--sans);font-size:13px;color:var(--muted)}
+  footer p{margin:0 0 8px}
+  code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);padding:1px 5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="mast">
+  <p class="kicker">60-Card Deck Build · Kitchen Table · Golgari</p>
+  <h1>Blight the Blitz</h1>
+  <p class="dek">A black-green midrange deck built from a 100-card Commander pool for one purpose: to beat a 60-card <em>Tidus, Yuna&rsquo;s Guardian</em> counters deck by taking its counters away.</p>
+  <dl class="facts">
+    <div class="fact"><dt>Format</dt><dd>Kitchen table</dd></div>
+    <div class="fact"><dt>Archetype</dt><dd>Midrange</dd></div>
+    <div class="fact"><dt>Colors</dt><dd><span class="pip pip-b"></span><span class="pip pip-g"></span> B/G</dd></div>
+    <div class="fact"><dt>Deck size</dt><dd>60</dd></div>
+    <div class="fact"><dt>Lands</dt><dd>24</dd></div>
+    <div class="fact"><dt>Avg MV</dt><dd>2.92</dd></div>
+    <div class="fact"><dt>Sideboard</dt><dd>None</dd></div>
+    <div class="fact"><dt>Power</dt><dd>Casual</dd></div>
+  </dl>
+</header>
+
+<section id="list">
+  <h2>The list</h2>
+  <p class="sub">Moxfield-importable. Exported by <code>validate_deck.py</code> after the gates passed.</p>
+  <div class="listwrap">
+    <div class="listbar">
+      <span>60 cards &middot; 40 distinct &middot; 0 sideboard</span>
+      <button class="copy" id="copyBtn" type="button">Copy list</button>
+    </div>
+<pre class="deck" id="decklist">1 Gatekeeper of Malakir
+1 Ravening Warg
+1 Scarblade Scout
+1 Iron-Shield Elf
+1 Creakwood Safewright
+1 Attercop
+1 Giant's Boulder
+1 Great Forest Druid
+1 Trystan, Callous Cultivator
+1 Firdoch Core
+1 Moonglove Extractor
+1 Wood Elves
+1 Morcant's Loyalist
+1 Dawnhand Eulogist
+1 Graveshifter
+1 High Perfect Morcant
+1 Head of the Hunt
+1 The Chief Warg
+1 Champions of the Perfect
+1 Blighted Blackthorn
+1 Tom, Bert, and William
+1 Stoic Grove-Guide
+1 Massacre Wurm
+1 Eaten Alive
+1 Stir Up Trouble
+1 Nameless Inversion
+1 Bogslither's Embrace
+1 Quarrel
+1 Blight Rot
+1 Bilbo's Deadly Slice
+1 Hero's Downfall
+1 Gnashing of Teeth
+1 Darkness Descends
+1 Springleaf Drum
+1 Thrór's Map
+1 Crude Bent Blade
+1 Overgrown Tomb
+1 Evolving Wilds
+15 Swamp
+7 Forest</pre>
+  </div>
+</section>
+
+<section id="target">
+  <h2>The deck this is aimed at</h2>
+  <p class="sub">What a 60-card Tidus build actually does, and the four seams in it</p>
+  <div class="col">
+    <p><strong>Tidus, Yuna&rsquo;s Guardian</strong> is a {G}{W}{U} 3/3 legend. At the beginning of combat on its controller&rsquo;s turn it moves a counter from one of their creatures onto another; its <em>Cheer</em> trigger draws a card and proliferates whenever one or more of their creatures with counters deals combat damage to a player, once each turn. It fronts the <em>Counter Blitz</em> Final&nbsp;Fantasy Commander precon, a Bant +1/+1 counters deck.</p>
+    <p>Squeezed into 60 cards, that becomes a creature-dense Bant midrange deck whose entire engine sits on one sentence: <strong>counters staying on bodies that connect.</strong> Four seams follow directly from it.</p>
+    <ol>
+      <li><strong>Counters are cargo, and the ship is fragile.</strong> Every +1/+1 counter is riding on a creature. Kill the creature and the counters go with it &mdash; a removal spell on a countered creature is a two-for-one that no proliferate can undo.</li>
+      <li><strong>&minus;1/&minus;1 counters delete +1/+1 counters outright.</strong> Not shrink &mdash; delete. When a creature has both, they annihilate as a state-based action. Every blight effect in this pool is a permanent, uncounterable answer to the thing their deck is made of.</li>
+      <li><strong>Cheer needs damage to a <em>player</em>.</strong> A creature that is blocked and killed triggers nothing. Deathtouch blockers turn off the card draw and the proliferate at the same time, and they do it for two mana against creatures that cost far more.</li>
+      <li><strong>Their board goes wide before it goes tall.</strong> A deck spreading counters across several bodies folds to one symmetric shrink effect in a way a single fat threat would not.</li>
+    </ol>
+  </div>
+  <div class="note">
+    <h4>The luckiest thing about this pool</h4>
+    <p>The collection is built around <strong>High Perfect Morcant</strong> and the Lorwyn&nbsp;Eclipsed <em>blight</em> mechanic &mdash; a whole subtheme of putting &minus;1/&minus;1 counters onto creatures. Against a +1/+1 counters deck that is not a good matchup, it is a natural predator. Six cards in the pool make or move &minus;1/&minus;1 counters, and every one of them reads as removal against Tidus.</p>
+  </div>
+</section>
+
+<section id="decisions">
+  <h2>Decisions</h2>
+  <p class="sub">Pool scoring, colors, and the mana</p>
+
+  <h3>Why this archetype</h3>
+  <div class="col">
+    <p>The pool is a 100-card Commander deck: 69 distinct entries, of which 33 are basic lands and <strong>every single nonbasic is a 1-of</strong>. That fact drives the whole build. The four-of philosophy in the method assumes redundancy is available; here it simply is not, so this is a 60-card highlander: 36 singleton spells plus 24 lands, chosen for individual power rather than for consistency of drawing any particular card.</p>
+    <p>Scoring the 67 nonbasic cards by what they do, the pool is not close:</p>
+    <ul>
+      <li><strong>15 cards remove or shrink a creature</strong> &mdash; 13 found by an oracle-text scan for destroy / exile / sacrifice / fight / &minus;1/&minus;1, plus Massacre Wurm and Nameless Inversion, whose &ldquo;get &minus;2/&minus;2&rdquo; and &ldquo;+3/&minus;3&rdquo; wording the scan missed.</li>
+      <li><strong>35 creatures</strong>, 11 of them Elves, giving High Perfect Morcant a real critical mass.</li>
+      <li><strong>6 blight / &minus;1/&minus;1 cards</strong>: Blight Rot, Blighted Blackthorn, Bogslither&rsquo;s Embrace, Creakwood Safewright, Darkness Descends, High Perfect Morcant.</li>
+      <li><strong>3 deathtouch creatures</strong>: Attercop, Ravening Warg, Trystan.</li>
+    </ul>
+    <p>A pool with fifteen removal spells and a &minus;1/&minus;1 subtheme, pointed at a deck made of +1/+1 counters, wants to be <strong>interaction-first midrange</strong>: answer everything early, land a resilient threat, win the long game. That is the deck built here.</p>
+  </div>
+
+  <h3>Why these colors</h3>
+  <div class="col">
+    <p>There was no choice to make. By color identity the 67 nonbasic cards are 25 green, 23 black, 14 colorless and 5 black-green &mdash; and nothing else. A third color does not exist in the pool, so the deck is B/G and the only real question was the ratio.</p>
+    <p>Black won the primary slot on the strength of its cards, not its count. Every unconditional answer in the pool is black: Bilbo&rsquo;s Deadly Slice, Hero&rsquo;s Downfall, Eaten Alive, Stir Up Trouble, Bogslither&rsquo;s Embrace, Gnashing of Teeth, Blight Rot, Darkness Descends, Massacre Wurm. Green contributes bodies, fixing, and three deathtouch blockers. The final pip split is <strong><span class="pip pip-b"></span>33.5 black to <span class="pip pip-g"></span>10.5 green</strong> &mdash; a 76/24 lean that the mana base follows.</p>
+  </div>
+
+  <h3>Cards that just missed the cut</h3>
+  <div class="scroll">
+    <table>
+      <caption>Near misses &mdash; all cache-verified, all left in the binder</caption>
+      <thead><tr><th>Card</th><th class="num">Cost</th><th>Why it did not make it</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Old Fat Spider</td><td class="num">{4}{G}{G}</td><td>A 6/7 reach wall is the best blocker in the pool against a Bant deck&rsquo;s fliers, but {G}{G} at six mana off nine green sources is a card you hold in hand.</td></tr>
+        <tr><td class="name">Selfless Safewright</td><td class="num">{3}{G}{G}</td><td>Flash protection is tempting until you notice indestructible does nothing against &minus;1/&minus;1 counters &mdash; a creature at zero toughness is put into the graveyard, not destroyed. Wrong protection for the matchup, and {G}{G} on top.</td></tr>
+        <tr><td class="name">Troll Negotiations</td><td class="num">{2}{G}{G}</td><td>Fight removal that first puts two +1/+1 counters on my own creature &mdash; handing the opponent&rsquo;s deck the exact axis it wants to interact with, at {G}{G}.</td></tr>
+        <tr><td class="name">Gigantic Big Bear</td><td class="num">{5}{G}{G}</td><td>A hexproof hasty 10/7 is the biggest card in the pool and does nothing about their board. Seven mana in a deck that must answer things on turns two through four.</td></tr>
+        <tr><td class="name">Warg Tactics</td><td class="num">{1}{G}</td><td>&ldquo;Destroy target creature with flying&rdquo; is live against Bant but dead against half the field, and the other mode gives a +1/+1 counter. Quarrel does the flexible job better.</td></tr>
+        <tr><td class="name">Cryptic Caves</td><td class="num">Land</td><td>Taps for {C} only. In a deck casting {1}{B}{B} on turn three and {3}{B}{B}{B} later, a colorless land is a missed land drop with extra steps.</td></tr>
+        <tr><td class="name">Elven Passage<br>Hobbit Hole</td><td class="num">Land</td><td>Neither has a mana ability at all &mdash; both only sacrifice to fetch a basic onto the battlefield tapped. As two of 24 lands in a double- and triple-black deck they cost more tempo than the fixing returns.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="copies">
+  <h2>A. Copy-count rationale</h2>
+  <p class="sub">Every nonland card, and why it is the count it is</p>
+  <div class="note warn">
+    <p><strong>One reason covers 36 of 36 cards: the pool owns exactly one copy.</strong> The collection is a Commander deck, so every nonbasic is a singleton and <code>validate_deck.py</code>&rsquo;s ownership gate caps each at 1. What follows is therefore not a count justification but an inclusion justification &mdash; why the card earned its single slot. Where a card would genuinely want to be a 4-of if the copies existed, the table says so.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption>36 nonland cards &middot; 1 copy each (owned: 1) &middot; grouped by role</caption>
+      <thead><tr><th>Card</th><th class="num">Cost</th><th>Role &amp; reason for the slot</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Eaten Alive</td><td class="num">{B}</td><td>Exile for one mana with a creature to spare. Exile beats destroy here: no recursion, no death triggers. <em>Would be a 4-of.</em></td></tr>
+        <tr><td class="name">Stir Up Trouble</td><td class="num">{B}</td><td>Second one-mana kill spell. The sacrifice cost is cheap in a deck with 21 creatures and Tom, Bert, and William.</td></tr>
+        <tr><td class="name">Nameless Inversion</td><td class="num">{1}{B}</td><td>Instant &minus;3 toughness for two. Kills Tidus at instant speed and answers any creature holding two counters. <em>Would be a 4-of.</em></td></tr>
+        <tr><td class="name">Bogslither&rsquo;s Embrace</td><td class="num">{1}{B}</td><td>Two-mana <em>exile</em> a creature, with blight 1 as the additional cost &mdash; and that blight can go on my own creature to no real loss, or is simply paid with {3}.</td></tr>
+        <tr><td class="name">Quarrel</td><td class="num">{1}{G}</td><td>Instant-speed bite. With a deathtouch creature in play it is a two-mana &ldquo;destroy target creature&rdquo; that dodges most protection.</td></tr>
+        <tr><td class="name">Blight Rot</td><td class="num">{2}{B}</td><td>Four &minus;1/&minus;1 counters at instant speed &mdash; the single most on-plan card in the pool. Kills anything with toughness four or less permanently, or strips four +1/+1 counters and leaves the creature a shell.</td></tr>
+        <tr><td class="name">Bilbo&rsquo;s Deadly Slice</td><td class="num">{1}{B}{B}</td><td>Unconditional destroy at instant speed. No clauses to play around.</td></tr>
+        <tr><td class="name">Hero&rsquo;s Downfall</td><td class="num">{1}{B}{B}</td><td>The same, plus planeswalkers. Redundancy with the Slice is the point &mdash; the deck wants to draw one of these most games.</td></tr>
+        <tr><td class="name">Gnashing of Teeth</td><td class="num">{1}{B}{B}</td><td>Modal: &minus;5/&minus;5 with exile attached, or a one-sided team &minus;1/&minus;1 that sweeps their token half. Both modes are premium in this matchup.</td></tr>
+        <tr><td class="name">Darkness Descends</td><td class="num">{2}{B}{B}</td><td>Two &minus;1/&minus;1 counters on <em>each</em> creature. Against a wide +1/+1 board it erases two counters everywhere and kills the small bodies outright. Symmetric &mdash; see the timing note below.</td></tr>
+        <tr><td class="name">Crude Bent Blade</td><td class="num">{2}{B}</td><td>An edict on entry, which is how this deck answers a hexproof or protected threat, plus a permanent that keeps giving +2/+1.</td></tr>
+        <tr><td class="name">Gatekeeper of Malakir</td><td class="num">{B}{B}</td><td>Second edict, on a 2/2 body. Kicked it is a three-mana two-for-one; unkicked it is a fine turn-two play.</td></tr>
+        <tr><td class="name">Massacre Wurm</td><td class="num">{3}{B}{B}{B}</td><td>The haymaker. Against a go-wide counters board it is a sweeper, a drain, and a 6/5 in one card. The whole reason the deck plays six lands&rsquo; worth of top end.</td></tr>
+        <tr><td class="name">Head of the Hunt</td><td class="num">{2}{B}{B}</td><td>Flash 4/3 that replaces every opposing creature death with exile <em>and</em> makes a 2/2 Wolf each time. Shuts off graveyard value and grows my board while doing it.</td></tr>
+        <tr><td class="name">High Perfect Morcant</td><td class="num">{2}{B}{G}</td><td>The engine: every Elf entering blights an opponent, and three untapped Elves proliferate those &minus;1/&minus;1 counters. Eleven Elves in the deck support it. Legendary, so a second copy would be worse anyway.</td></tr>
+        <tr><td class="name">Morcant&rsquo;s Loyalist</td><td class="num">{1}{B}{G}</td><td>Anthem for the eleven Elves and a death trigger that buys one back. Turns the small bodies into real attackers.</td></tr>
+        <tr><td class="name">Ravening Warg</td><td class="num">{1}{B}</td><td>Two-mana deathtouch. Against Cheer this is a wall that says &ldquo;attacking costs you your best creature and gets you nothing.&rdquo;</td></tr>
+        <tr><td class="name">Trystan, Callous Cultivator</td><td class="num">{2}{G}</td><td>3/4 deathtouch &mdash; blocks everything they can build and survives most of it. Legendary; one is correct.</td></tr>
+        <tr><td class="name">Attercop</td><td class="num">{1}{G}</td><td>Reach <em>and</em> deathtouch for two. The answer to a flier carrying counters.</td></tr>
+        <tr><td class="name">Scarblade Scout</td><td class="num">{1}{B}</td><td>Lifelink Elf; fuels Morcant and the several &ldquo;if there is an Elf card in your graveyard&rdquo; clauses via its own mill two.</td></tr>
+        <tr><td class="name">Iron-Shield Elf</td><td class="num">{1}{B}</td><td>3/1 Elf that can go indestructible to blank a removal spell or win a block. Kept over Troop of Ponies specifically because it is an Elf and Morcant counts those.</td></tr>
+        <tr><td class="name">Creakwood Safewright</td><td class="num">{1}{B}</td><td>A two-mana 5/5 that enters as a 2/2 and heals a &minus;1/&minus;1 counter each end step. Rare card that <em>wants</em> the counters this deck traffics in.</td></tr>
+        <tr><td class="name">Great Forest Druid</td><td class="num">{1}{G}</td><td>Any-color mana on an 0/4 body: fixing and a wall in one slot, both of which this deck is short on.</td></tr>
+        <tr><td class="name">Moonglove Extractor</td><td class="num">{2}{B}</td><td>Cheap Elf that turns every attack into a card.</td></tr>
+        <tr><td class="name">Wood Elves</td><td class="num">{2}{G}</td><td>Fetches a Forest onto the battlefield &mdash; the only card in the deck that fixes green for free &mdash; and is an Elf for Morcant.</td></tr>
+        <tr><td class="name">Dawnhand Eulogist</td><td class="num">{3}{B}</td><td>Menace body that drains for two with an Elf in the yard. Evasive damage matters in a deck that otherwise gets ground down.</td></tr>
+        <tr><td class="name">Graveshifter</td><td class="num">{3}{B}</td><td>Changeling, so it is an Elf for Morcant, and it buys back the best creature the removal war killed.</td></tr>
+        <tr><td class="name">The Chief Warg</td><td class="num">{2}{B}{G}</td><td>Menace 3/3 that draws a card every attack once a four-power creature is out &mdash; and this deck has seven of those.</td></tr>
+        <tr><td class="name">Champions of the Perfect</td><td class="num">{3}{G}</td><td>A 6/6 for four that draws on every creature spell. The behold-and-exile cost is real, but eleven Elves pay it and the card comes back when it leaves.</td></tr>
+        <tr><td class="name">Blighted Blackthorn</td><td class="num">{4}{B}</td><td>3/7 blocks essentially their whole deck, and blight 2 turns into a card each turn. The blight can land on itself with almost no cost.</td></tr>
+        <tr><td class="name">Tom, Bert, and William</td><td class="num">{3}{B}{G}</td><td>5/5 that converts dying creatures into cards and returns from the graveyard as an artifact. The grind engine.</td></tr>
+        <tr><td class="name">Stoic Grove-Guide</td><td class="num">{4}{B/G}</td><td>Hybrid cost, so it casts off either color &mdash; a real virtue with this mana base &mdash; and it makes a 2/2 Elf from the graveyard after it dies.</td></tr>
+        <tr><td class="name">Springleaf Drum</td><td class="num">{1}</td><td>Fixing that costs one and turns a summoning-sick creature into the missing color.</td></tr>
+        <tr><td class="name">Giant&rsquo;s Boulder</td><td class="num">{1}</td><td>One-drop that scries two and then fixes any color. Added in iteration to raise the turn-one play rate and cut color screw.</td></tr>
+        <tr><td class="name">Firdoch Core</td><td class="num">{3}</td><td>Any-color fixing on a changeling permanent &mdash; and because it is an Elf permanent, entering triggers Morcant. Also becomes a 4/4 when the game stalls.</td></tr>
+        <tr><td class="name">Thr&oacute;r&rsquo;s Map</td><td class="num">{2}</td><td>Finds a land now and loots later, smoothing a deck that badly wants to hit its drops.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <h4>Timing note: Darkness Descends is symmetric</h4>
+    <p>It puts two &minus;1/&minus;1 counters on <em>each</em> creature, mine included, and my Attercop, Moonglove Extractor, Iron-Shield Elf and Scarblade Scout all die to it. Cast it when their board is wider or smaller than mine &mdash; which against a counters deck spreading a token swarm is most of the time &mdash; and hold it when I am ahead. It is deliberately the only symmetric sweeper in the 60.</p>
+  </div>
+</section>
+
+<section id="landmath">
+  <h2>B. Land math</h2>
+  <p class="sub">24 lands, and the Karsten check that follows</p>
+  <div class="col">
+    <p>24 lands sits mid-range in the method&rsquo;s 23&ndash;25 band for midrange, and matches a curve that peaks at two and three but has to reach {3}{B}{B}{B} for Massacre Wurm.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption>Hypergeometric row for 24 lands in 60 (method &sect;3)</caption>
+      <thead><tr><th>Lands</th><th class="num">P(2&ndash;4 in 7)</th><th class="num">P(2&ndash;5 in 7)</th><th class="num">P(0&ndash;1 in 7)</th><th class="num">Expected lands by T4 (play)</th></tr></thead>
+      <tbody><tr><td class="name">24</td><td class="num">77.5%</td><td class="num">84.4%</td><td class="num">14.3%</td><td class="num">4.00</td></tr></tbody>
+    </table>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption>Karsten source check &mdash; sources counted as lands only (Overgrown Tomb and Evolving Wilds count for both colors)</caption>
+      <thead><tr><th>Requirement</th><th class="num">Pips</th><th>Earliest turn needed</th><th class="num">Sources required</th><th class="num">Sources in deck</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="name"><span class="pip pip-b"></span>Single B</td><td class="num">33.5</td><td>T1 &mdash; Eaten Alive, Stir Up Trouble</td><td class="num">14</td><td class="num">17</td><td><span class="ok">meets</span></td></tr>
+        <tr><td class="name"><span class="pip pip-b"></span>Double BB</td><td class="num">&mdash;</td><td>T2 &mdash; Gatekeeper of Malakir</td><td class="num">20</td><td class="num">17</td><td><span class="miss">3 short</span></td></tr>
+        <tr><td class="name"><span class="pip pip-b"></span>Double BB</td><td class="num">&mdash;</td><td>T3 &mdash; Slice, Downfall, Gnashing</td><td class="num">18</td><td class="num">17</td><td><span class="miss">1 short</span></td></tr>
+        <tr><td class="name"><span class="pip pip-g"></span>Single G</td><td class="num">10.5</td><td>T2 &mdash; Attercop, Quarrel, Great Forest Druid</td><td class="num">13</td><td class="num">9</td><td><span class="miss">4 short</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+    <p><strong>Sources.</strong> Black: 15 Swamp + Overgrown Tomb + Evolving Wilds = <strong>17</strong>. Green: 7 Forest + Overgrown Tomb + Evolving Wilds = <strong>9</strong>. Four more any-color sources sit on nonland permanents &mdash; Great Forest Druid, Firdoch Core, Giant&rsquo;s Boulder, Springleaf Drum &mdash; and Wood Elves fetches a Forest onto the battlefield, but none of these are online on turn two, so the honest table above excludes them.</p>
+    <p><strong>Enters-tapped count: effectively 2.</strong> Overgrown Tomb enters untapped for two life (<code>goldfish.py</code> reads &ldquo;unless&rdquo; clauses as untapped, which is optimistic and worth saying out loud), and Evolving Wilds fetches a tapped basic. Both are far inside the method&rsquo;s 6&ndash;8 ceiling for non-aggro decks.</p>
+  </div>
+  <div class="note warn">
+    <h4>The shortfalls are pool-bound, not a tuning error</h4>
+    <p>The collection contains exactly <strong>one dual land</strong> (Overgrown Tomb) and one fetch (Evolving Wilds). With 22 basics and no other fixing, no split can satisfy both a double-black turn three and a single-green turn two &mdash; those two requirements need 31 sources between them out of 24 lands. Sweeping every split from 17/5 Swamp/Forest to 12/10 moved turn-three color screw only between 21.4% and 19.0%, bottoming out at the 15/7 split chosen here. Rebuilding green-lite (cutting Quarrel, Wood Elves and Champions of the Perfect) reached 16.6% &mdash; still above target, at the cost of three of the deck&rsquo;s best cards. The mana is as good as this pool allows.</p>
+  </div>
+</section>
+
+<section id="sideboard">
+  <h2>C. Sideboard guide</h2>
+  <p class="sub">Intentionally empty</p>
+  <div class="col">
+    <p><strong>There is no sideboard.</strong> Kitchen table was the chosen format and no sideboard was requested, so the deck is 60 maindeck cards and nothing else. This heading is kept rather than dropped so its absence is a stated decision.</p>
+    <p>Worth knowing if that changes: the 31 nonbasic pool cards not in the 60 are all singletons, so a 15-card board would be 15 different cards. The natural ones against other archetypes would be Old Fat Spider and Boughside Wanderers as extra blockers, Warg Tactics as dedicated flier removal, Macabre Waltz and Dawn-Blessed Pennant for grind, and Selfless Safewright against sorcery-speed sweepers.</p>
+  </div>
+</section>
+
+<section id="legality">
+  <h2>D. Legality statement</h2>
+  <div class="col">
+    <p><strong>Format: kitchen table. No legality gate was applied</strong> &mdash; <code>validate_deck.py</code>&rsquo;s <code>kitchen</code> format sets <code>legality: None</code>, and the run passed on size, copy limit and ownership only.</p>
+    <p>Normally the gate reads the cache&rsquo;s <code>legalities.&lt;format&gt;</code> field. In this session it could not: <strong>the cache carries no legality data at all</strong>, because <code>api.scryfall.com</code> is blocked by this environment&rsquo;s egress proxy and <code>card_cache.py</code> could not fetch. The <code>legalities</code> field is <code>{}</code> for every record, and the cache snapshot date is today&rsquo;s build.</p>
+    <p><strong>What this means for you:</strong> I cannot tell you whether this list is Standard- or Pioneer-legal, and I have not guessed. If you ever want to take it to a sanctioned event, re-run <code>card_cache.py validate</code> from a machine that can reach Scryfall and then <code>validate_deck.py --format standard</code>; that is a two-minute check and the only trustworthy answer. Card-by-card, the list draws on Lorwyn Eclipsed, The Hobbit, Modern Horizons, Foundations, Ravnica Remastered, Core Set 2020/2021, Lorwyn and Ninth Edition, so an eternal format is far likelier than a rotating one.</p>
+  </div>
+  <div class="note warn">
+    <h4>Card data provenance</h4>
+    <p>The skill&rsquo;s first iron rule is that card truth comes from the cache and misses are fetched from Scryfall, never from memory. Scryfall was unreachable here, and the repo&rsquo;s bundled cache holds 199 cards from an unrelated Marvel demo collection &mdash; so all 69 names missed. Rather than build from memory, <strong>every card&rsquo;s cost, type, power, toughness and oracle text was read from a web search against Scryfall, Gatherer and retailer listings for that exact card</strong>, then written into a cache in the toolkit&rsquo;s own record format. <code>card_cache.py validate</code> then reported 69 names, 69 from cache, 0 fetched, 0 problems, and <code>validate_deck.py</code>, <code>deck_audit.py</code> and <code>goldfish.py</code> all ran against it as real gates. Two consequences: card text traces to cited web sources rather than to Scryfall, and there is no legality or price data. Spot-check any card that surprises you.</p>
+  </div>
+</section>
+
+<section id="charts">
+  <h2>Charts</h2>
+  <p class="sub">Straight from <code>goldfish.py</code> output</p>
+  <div class="charts">
+    <div class="chart">
+      <h4>Mana curve (nonland)</h4>
+      <div class="bar-row"><span class="bar-lab">1 MV</span><span class="bar-track"><span class="bar-fill" style="width:36.4%"></span></span><span class="bar-val">4</span></div>
+      <div class="bar-row"><span class="bar-lab">2 MV</span><span class="bar-track"><span class="bar-fill" style="width:100%"></span></span><span class="bar-val">11</span></div>
+      <div class="bar-row"><span class="bar-lab">3 MV</span><span class="bar-track"><span class="bar-fill" style="width:90.9%"></span></span><span class="bar-val">10</span></div>
+      <div class="bar-row"><span class="bar-lab">4 MV</span><span class="bar-track"><span class="bar-fill" style="width:63.6%"></span></span><span class="bar-val">7</span></div>
+      <div class="bar-row"><span class="bar-lab">5 MV</span><span class="bar-track"><span class="bar-fill" style="width:27.3%"></span></span><span class="bar-val">3</span></div>
+      <div class="bar-row"><span class="bar-lab">6 MV</span><span class="bar-track"><span class="bar-fill" style="width:9.1%"></span></span><span class="bar-val">1</span></div>
+      <p style="font-family:var(--sans);font-size:12px;color:var(--muted);margin:12px 0 0">Average MV 2.92 &mdash; inside the midrange target of &le;3.0. Peak at 2&ndash;3 as the method asks.</p>
+    </div>
+    <div class="chart">
+      <h4>Colored pips</h4>
+      <div class="bar-row"><span class="bar-lab">Black</span><span class="bar-track"><span class="bar-fill plum" style="width:100%"></span></span><span class="bar-val">33.5</span></div>
+      <div class="bar-row"><span class="bar-lab">Green</span><span class="bar-track"><span class="bar-fill" style="width:31.3%"></span></span><span class="bar-val">10.5</span></div>
+      <p style="font-family:var(--sans);font-size:12px;color:var(--muted);margin:12px 0 0">76% black / 24% green. Halves come from Stoic Grove-Guide&rsquo;s {B/G} hybrid pip, which counts as half to each.</p>
+    </div>
+    <div class="chart">
+      <h4>Card types</h4>
+      <div class="bar-row"><span class="bar-lab">Lands</span><span class="bar-track"><span class="bar-fill" style="width:100%"></span></span><span class="bar-val">24</span></div>
+      <div class="bar-row"><span class="bar-lab">Creature</span><span class="bar-track"><span class="bar-fill" style="width:87.5%"></span></span><span class="bar-val">21</span></div>
+      <div class="bar-row"><span class="bar-lab">Instant</span><span class="bar-track"><span class="bar-fill plum" style="width:20.8%"></span></span><span class="bar-val">5</span></div>
+      <div class="bar-row"><span class="bar-lab">Sorcery</span><span class="bar-track"><span class="bar-fill plum" style="width:20.8%"></span></span><span class="bar-val">5</span></div>
+      <div class="bar-row"><span class="bar-lab">Artifact</span><span class="bar-track"><span class="bar-fill" style="width:20.8%"></span></span><span class="bar-val">5</span></div>
+      <p style="font-family:var(--sans);font-size:12px;color:var(--muted);margin:12px 0 0">Firdoch Core is a Kindred Artifact &mdash; an Elf permanent, so it triggers Morcant on entry.</p>
+    </div>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption><code>deck_audit.py --template sixty --archetype midrange</code> &mdash; final run, all counts in range</caption>
+      <thead><tr><th>Package</th><th class="num">Count</th><th class="num">Target</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Lands</td><td class="num">24</td><td class="num">23&ndash;26</td><td><span class="ok">in range</span></td></tr>
+        <tr><td class="name">Creatures</td><td class="num">21</td><td class="num">14&ndash;24</td><td><span class="ok">in range</span></td></tr>
+        <tr><td class="name">Interaction</td><td class="num">11</td><td class="num">8&ndash;12</td><td><span class="ok">in range</span> &mdash; the true figure is 13. The keyword scan does not read Nameless Inversion (&ldquo;+3/&minus;3&rdquo;) or Blight Rot (&ldquo;four &minus;1/&minus;1 counters&rdquo;) as removal; both kill creatures.</td></tr>
+        <tr><td class="name">Card advantage</td><td class="num">7</td><td class="num">3&ndash;8</td><td><span class="ok">in range</span></td></tr>
+        <tr><td class="name">Spot removal</td><td class="num">10</td><td class="num">&mdash;</td><td>Plus 1 sweeper (Darkness Descends); Massacre Wurm and Gnashing of Teeth&rsquo;s second mode are sweepers the scan files elsewhere.</td></tr>
+        <tr><td class="name">Ramp</td><td class="num">4</td><td class="num">&mdash;</td><td>All four are fixers first: Firdoch Core, Giant&rsquo;s Boulder, Great Forest Druid, Springleaf Drum.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="playtest">
+  <h2>Playtest statistics</h2>
+  <p class="sub">5,000 goldfish games per side &middot; thresholds from method &sect;10, midrange column</p>
+  <div class="scroll">
+    <table>
+      <caption>Bold red marks a metric outside the method&rsquo;s midrange threshold</caption>
+      <thead><tr><th>Metric</th><th class="num">Target</th><th class="num">On the play</th><th class="num">On the draw</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Keepable hands</td><td class="num">&ge; 82%</td><td class="num"><span class="ok">83.9%</span></td><td class="num"><span class="ok">84.3%</span></td></tr>
+        <tr><td class="name">Mulligan rate</td><td class="num">&mdash;</td><td class="num">16.1%</td><td class="num">15.7%</td></tr>
+        <tr><td class="name">Screw (&lt;3 sources T3)</td><td class="num">&le; 12%</td><td class="num"><span class="ok">9.5%</span></td><td class="num"><span class="ok">4.8%</span></td></tr>
+        <tr><td class="name">Color screw T2</td><td class="num">&le; 10%</td><td class="num"><span class="miss">16.0%</span></td><td class="num"><span class="miss">16.4%</span></td></tr>
+        <tr><td class="name">Color screw T3</td><td class="num">&le; 10%</td><td class="num"><span class="miss">19.3%</span></td><td class="num"><span class="miss">18.5%</span></td></tr>
+        <tr><td class="name">On-curve T2</td><td class="num">&ge; 65%</td><td class="num"><span class="ok">66.0%</span></td><td class="num"><span class="ok">68.8%</span></td></tr>
+        <tr><td class="name">Curve-out through T3</td><td class="num">&ge; 30%</td><td class="num"><span class="miss">5.8%</span></td><td class="num"><span class="miss">7.1%</span></td></tr>
+        <tr><td class="name">Flood by T10</td><td class="num">&le; 15%</td><td class="num"><span class="ok">3.0%</span></td><td class="num"><span class="ok">5.6%</span></td></tr>
+        <tr><td class="name">Wincon avg first cast</td><td class="num">&le; T4.5</td><td class="num"><span class="miss">6.21</span></td><td class="num"><span class="miss">5.95</span></td></tr>
+        <tr><td class="name">Wincon cast by T10</td><td class="num">&mdash;</td><td class="num">55.8%</td><td class="num">59.4%</td></tr>
+        <tr><td class="name">Missed land drop by T3</td><td class="num">&mdash;</td><td class="num">13.4%</td><td class="num">7.2%</td></tr>
+        <tr><td class="name">Missed land drop by T4</td><td class="num">&mdash;</td><td class="num">26.8%</td><td class="num">18.2%</td></tr>
+        <tr><td class="name">Avg mana sources T4</td><td class="num">&mdash;</td><td class="num">4.06</td><td class="num">4.22</td></tr>
+        <tr><td class="name">Ramp deployed by T3</td><td class="num">&mdash;</td><td class="num">33.9%</td><td class="num">35.6%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The three misses, and what was done about each</h3>
+  <div class="col">
+    <p><strong>Color screw, 16.0% / 19.3% against a 10% target &mdash; acted on, then accepted.</strong> This drove the one real iteration (below), which cut it from 19.8% / 24.4%. Everything after that hit a floor: the land-split sweep never got below 19.0% at turn three, and a green-lite rebuild only reached 16.6% while costing three of the deck&rsquo;s best cards. One dual land in a hundred-card pool is the binding constraint. Accepted, with the mitigation being four any-color rocks and dorks plus Wood Elves.</p>
+    <p><strong>Curve-out through T3, 5.8% against a 30% target &mdash; not a real failure.</strong> This metric requires casting a spell of mana value <em>n</em> on turn <em>n</em> for three consecutive turns, so it is capped by the turn-one play rate, which is 32.2%. Reaching 30% cumulative would need eight to ten one-drops; the entire pool contains four playable ones and all four are in the deck. The meaningful number underneath it is on-curve turn two at 66.0%, which clears its threshold. A deck whose plan is to answer their turn-two and turn-three plays does not want a blank turn one filled with a bad creature.</p>
+    <p><strong>Wincon first cast, T6.21 against a T4.5 target &mdash; accepted by design.</strong> The average is dragged by Massacre Wurm at six mana. Re-running with only the four- and five-mana threats named as win conditions barely moved it (T6.02 on the play), which is the honest signal: this deck spends its early turns casting removal, not threats. That is the point of an anti-deck. It wins on turn eight having answered six things, not on turn five having raced.</p>
+  </div>
+</section>
+
+<section id="games">
+  <h2>Sample games</h2>
+  <p class="sub">Three narrated, using only cache-verified card behaviour</p>
+
+  <div class="game">
+    <h3>1. On the draw against a faster deck</h3>
+    <p>Keep a seven of Swamp, Swamp, Forest, Eaten Alive, Ravening Warg, Blight Rot, Champions of the Perfect against an unknown aggro opponent. They lead on a one-drop and a two-drop; I have no turn-one play, which is the deck&rsquo;s standing weakness. Turn two Ravening Warg walls the board &mdash; deathtouch means neither of their creatures can attack profitably into it, and they hold back rather than trade down. Turn three Eaten Alive with a land to spare handles their three-drop, turn four Blight Rot kills the creature they finally committed. By turn six Champions of the Perfect lands as a 6/6 that draws a card on every subsequent creature and the game is over on board.</p>
+    <p class="lesson"><b>Lesson</b> &nbsp;The deck has no turn one and does not need one. Deathtouch two-drops buy the tempo that a one-drop would have bought, and buy it against bigger creatures. The real risk on the draw is not their speed but drawing the green half of the deck with only Swamps &mdash; that hand kept because it had a Forest.</p>
+  </div>
+
+  <div class="game">
+    <h3>2. Against a sweeper on turn five</h3>
+    <p>By turn four I have Scarblade Scout, Morcant&rsquo;s Loyalist and High Perfect Morcant out, the Loyalist making the others bigger, and I am attacking. Their turn five is a wrath and all three die. This is the scenario the deck is least built for &mdash; there is no protection spell in the 60, because the pool&rsquo;s only candidate, Selfless Safewright, grants indestructible, which does nothing against the counters this deck traffics in and was cut for it. What the deck does have is refills: Graveshifter returns Morcant to hand on turn six, Tom, Bert, and William comes down on turn seven as a 5/5 that returns itself from the graveyard when it dies, and Morcant&rsquo;s Loyalist&rsquo;s own death trigger already bought back an Elf on the way out. I rebuild one threat at a time instead of recommitting.</p>
+    <p class="lesson"><b>Lesson</b> &nbsp;Do not overextend into an untapped opponent with four or more mana. The deck&rsquo;s answer to a sweeper is recursion, not protection, so play threats sequentially &mdash; one resilient body plus held-up removal beats three bodies into a wrath.</p>
+  </div>
+
+  <div class="game">
+    <h3>3. Against the Tidus deck</h3>
+    <p>They open with a one-drop, put a counter on it, and add a two-drop. Turn three they cast Tidus and I let it resolve &mdash; there is nothing to gain by killing it before it has moved a counter. Turn four, at the beginning of their combat, Tidus moves a counter and they attack for Cheer; Attercop, held up since turn two, blocks the countered creature and its deathtouch kills it, taking both counters with it and denying the draw-and-proliferate entirely. My turn five is Blight Rot at the end of their next combat step on their best remaining threat &mdash; four &minus;1/&minus;1 counters annihilating its accumulated +1/+1 counters and leaving a corpse. Turn six Massacre Wurm gives their three remaining creatures &minus;2/&minus;2, kills all three, drains them for six, and leaves a 6/5. High Perfect Morcant follows and every Elf after it blights another of their creatures.</p>
+    <p class="lesson"><b>Lesson</b> &nbsp;Tidus is not the card to kill on sight &mdash; the creatures carrying the counters are. The Cheer trigger needs combat damage to a player, so a deathtouch blocker is a hard counter to their whole engine for two mana, and every &minus;1/&minus;1 effect is permanent removal of the resource their deck is made of. Save the unconditional removal for whatever they cast after the board is already clean.</p>
+  </div>
+</section>
+
+<section id="matchups">
+  <h2>Matchups</h2>
+  <p class="sub">Six standard archetypes &middot; no post-board column &mdash; there is no sideboard</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Archetype</th><th>Rating</th><th>Why</th><th>Key cards</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Aggro</td><td><span class="chip chip-even">Even</span></td><td>Deathtouch two-drops and 15 removal spells line up well, but there is no turn-one play and 26.8% of games miss the turn-four land drop on the play.</td><td>Ravening Warg, Trystan, Gnashing of Teeth</td></tr>
+        <tr><td class="name">Control</td><td><span class="chip chip-unf">Unfavored</span></td><td>Ten spot-removal spells are close to dead cards. Only the handful of engines keep pace, and there is no way to pressure a counterspell deck quickly.</td><td>Tom Bert and William, Champions of the Perfect, The Chief Warg</td></tr>
+        <tr><td class="name">Midrange</td><td><span class="chip chip-fav">Favored</span></td><td>The deck this one was built for, Tidus included. More removal, better blockers and more recursion than a fair creature deck can grind through.</td><td>High Perfect Morcant, Head of the Hunt, Blight Rot</td></tr>
+        <tr><td class="name">Combo</td><td><span class="chip chip-unf">Unfavored</span></td><td>No counterspells and no hand disruption in the pool at all. If the combo does not run through a creature, this deck cannot touch it.</td><td>&mdash; (Crude Bent Blade edict, at best)</td></tr>
+        <tr><td class="name">Go-wide</td><td><span class="chip chip-fav">Favored</span></td><td>Three sweeper effects at four, three and six mana, one of which drains for two per creature. A wide board is the worst thing to present to this deck.</td><td>Massacre Wurm, Darkness Descends, Gnashing of Teeth</td></tr>
+        <tr><td class="name">Graveyard</td><td><span class="chip chip-even">Even</span></td><td>No dedicated graveyard hate, but four exile effects and Head of the Hunt&rsquo;s replacement clause &mdash; which exiles <em>every</em> opposing creature that would die &mdash; do a lot of the work.</td><td>Head of the Hunt, Bogslither&rsquo;s Embrace, Eaten Alive</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="iteration">
+  <h2>Iteration log</h2>
+  <p class="sub">One change, driven by an out-of-range playtest finding</p>
+
+  <h4>v1 &rarr; v2 &mdash; swap two green creatures for two colorless fixers</h4>
+  <div class="col">
+    <p><strong>Trigger.</strong> The v1 build passed <code>validate_deck.py</code> and every <code>deck_audit.py</code> range, but <code>goldfish.py</code> reported color screw of <strong>19.8% on turn two and 24.4% on turn three</strong> against a 10% threshold, and only 22.8% of games had a turn-one play.</p>
+    <p><strong>Change.</strong> Out: Lys Alana Dignitary ({1}{G}, whose mana ability only switches on with an Elf already in the graveyard &mdash; too conditional to be fixing) and Dawn&rsquo;s Light Archer ({2}{G} flash reach 4/2, a good blocker but another green card in a deck that could not cast them). In: Giant&rsquo;s Boulder ({1}, scry 2 then any-color mana) and Firdoch Core ({3}, any-color mana on a changeling Elf permanent).</p>
+    <p><strong>Result.</strong> Color screw fell to 16.0% / 19.3%, turn-one play rate rose from 22.8% to 32.2%, and screw fell from 10.3% to 9.5%. Still outside threshold, so a land-split sweep and a green-lite rebuild were tested and both rejected &mdash; see the land-math note.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption><code>deck_audit.py</code> before and after</caption>
+      <thead><tr><th>Package</th><th class="num">v1</th><th class="num">v2 (final)</th><th class="num">Target</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Avg MV</td><td class="num">2.94</td><td class="num">2.92</td><td class="num">&le; 3.0</td></tr>
+        <tr><td class="name">Lands</td><td class="num">24</td><td class="num">24</td><td class="num">23&ndash;26</td></tr>
+        <tr><td class="name">Creatures</td><td class="num">23</td><td class="num">21</td><td class="num">14&ndash;24</td></tr>
+        <tr><td class="name">Interaction</td><td class="num">10</td><td class="num">11</td><td class="num">8&ndash;12</td></tr>
+        <tr><td class="name">Card advantage</td><td class="num">7</td><td class="num">7</td><td class="num">3&ndash;8</td></tr>
+        <tr><td class="name">Ramp</td><td class="num">3</td><td class="num">4</td><td class="num">&mdash;</td></tr>
+        <tr><td class="name">Curve 1 MV</td><td class="num">3</td><td class="num">4</td><td class="num">&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption>Rejected experiments, both measured at 5,000 games</caption>
+      <thead><tr><th>Experiment</th><th class="num">Color screw T2</th><th class="num">T3</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Land sweep 17/5 Swamp/Forest</td><td class="num">16.6%</td><td class="num">21.4%</td><td>Worse</td></tr>
+        <tr><td class="name">Land sweep 16/6</td><td class="num">16.0%</td><td class="num">19.8%</td><td>Worse</td></tr>
+        <tr><td class="name"><strong>Land sweep 15/7 &mdash; chosen</strong></td><td class="num">15.4%</td><td class="num">19.0%</td><td><span class="ok">Best</span></td></tr>
+        <tr><td class="name">Land sweep 14/8</td><td class="num">15.6%</td><td class="num">19.7%</td><td>Worse</td></tr>
+        <tr><td class="name">Land sweep 12/10</td><td class="num">16.1%</td><td class="num">20.8%</td><td>Worse</td></tr>
+        <tr><td class="name">Green-lite: &minus;Quarrel, &minus;Wood Elves, &minus;Champions</td><td class="num">13.7%</td><td class="num">16.6%</td><td>Rejected &mdash; 2.4pp for three of the best cards, still off target</td></tr>
+        <tr><td class="name">Troop of Ponies over Iron-Shield Elf</td><td class="num">15.9%</td><td class="num">18.9%</td><td>Rejected &mdash; 0.4pp, and it costs an Elf that Morcant counts</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Build provenance.</strong> Pool parsed by <code>parse_collection.py</code> (69 distinct, 100 copies). <code>card_cache.py validate</code>: 69 names, 69 from cache, 0 fetched, 0 problems. <code>validate_deck.py --format kitchen --deck-size 60</code>: PASS, 60 main / 0 side / 40 distinct. <code>deck_audit.py --template sixty --archetype midrange</code>: all package counts within template ranges. <code>goldfish.py</code>: 5,000 games per side, seed 7.</p>
+  <p>Every number on this page traces to one of those four scripts. Card text traces to web-search verification against Scryfall, Gatherer and retailer listings, because Scryfall itself was unreachable from this session.</p>
+</footer>
+
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyBtn');
+    var pre = document.getElementById('decklist');
+    if (!btn || !pre) return;
+    btn.addEventListener('click', function () {
+      var text = pre.textContent;
+      var done = function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy list'; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+      } else {
+        fallback(text, done);
+      }
+    });
+    function fallback(text, done) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'absolute';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'Select and copy'; }
+      document.body.removeChild(ta);
+    }
+  })();
+</script>
+</body>
+</html>

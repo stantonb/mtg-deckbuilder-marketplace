@@ -1,0 +1,57 @@
+Deck audit — template=sixty / midrange: 60 main, 0 side, avg MV 2.92, 15 plays at 1-2 MV
+  package counts (target range):
+    lands             24 (target 23-26)
+    ramp               4
+    card_advantage     7 (target 3-8)
+    draw               5
+    recursion          2
+    interaction       11 (target 8-12)
+    spot_removal      10
+    sweeper            1
+    protection         1
+    creatures         21 (target 14-24)
+    token_maker        2
+    lifegain           4
+  curve: 1:4, 2:11, 3:10, 4:7, 5:3, 6:1
+  all package counts within template ranges
+  per-card roles (override misreads when designing):
+     1 Gatekeeper of Malakir                    mv2 creature, spot_removal
+     1 Ravening Warg                            mv2 creature, lifegain
+     1 Scarblade Scout                          mv2 creature, lifegain
+     1 Iron-Shield Elf                          mv2 creature, protection
+     1 Creakwood Safewright                     mv2 creature
+     1 Attercop                                 mv2 creature
+     1 Giant's Boulder                          mv1 ramp, spot_removal
+     1 Great Forest Druid                       mv2 creature, ramp
+     1 Trystan, Callous Cultivator              mv3 creature, lifegain
+     1 Firdoch Core                             mv3 ramp
+     1 Moonglove Extractor                      mv3 creature, draw
+     1 Wood Elves                               mv3 creature
+     1 Morcant's Loyalist                       mv3 creature, recursion
+     1 Dawnhand Eulogist                        mv4 creature, lifegain
+     1 Graveshifter                             mv4 creature, recursion
+     1 High Perfect Morcant                     mv4 creature
+     1 Head of the Hunt                         mv4 creature, token_maker
+     1 The Chief Warg                           mv4 creature, draw
+     1 Champions of the Perfect                 mv4 creature, draw
+     1 Blighted Blackthorn                      mv5 creature, draw
+     1 Tom, Bert, and William                   mv5 creature
+     1 Stoic Grove-Guide                        mv5 creature, token_maker
+     1 Massacre Wurm                            mv6 creature
+     1 Eaten Alive                              mv1 spot_removal
+     1 Stir Up Trouble                          mv1 spot_removal
+     1 Nameless Inversion                       mv2 -
+     1 Bogslither's Embrace                     mv2 spot_removal
+     1 Quarrel                                  mv2 spot_removal
+     1 Blight Rot                               mv3 -
+     1 Bilbo's Deadly Slice                     mv3 spot_removal
+     1 Hero's Downfall                          mv3 spot_removal
+     1 Gnashing of Teeth                        mv3 spot_removal
+     1 Darkness Descends                        mv4 sweeper
+     1 Springleaf Drum                          mv1 ramp
+     1 Thrór's Map                              mv2 draw
+     1 Crude Bent Blade                         mv3 spot_removal
+     1 Overgrown Tomb                           mv0 land
+     1 Evolving Wilds                           mv0 land
+    15 Swamp                                    mv0 land
+     7 Forest                                   mv0 land
