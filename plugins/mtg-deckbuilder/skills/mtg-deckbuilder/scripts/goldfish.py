@@ -22,6 +22,11 @@ Definitions used (also echoed in the JSON output):
                   that searches for a land and puts it onto the battlefield
                   pulls a basic from the library, tapped.
 
+Fetch lands (Evolving Wilds, Fabled Passage, the Landscapes) are cracked
+the turn they are played: a basic of a needed colour leaves the library and
+enters tapped (Fabled Passage's late-game untap is ignored — conservative).
+With no matching basic left they stay as the land itself.
+
 Lands with an unconditional "enters tapped" cannot pay for spells the turn
 they are played; "enters tapped unless..." lands are treated as untapped
 (optimistic). One-shot mana (rituals, Treasure makers) and cost reducers
@@ -51,22 +56,50 @@ from mtglib import (BASIC_COLORS, cache_index, card_is_land, is_basic,
 
 MAX_TURN = 10
 PERMANENT_TYPES = ("Artifact", "Creature", "Enchantment", "Planeswalker", "Battle")
-# "Search your library for a basic land card, put it onto the battlefield"
+# "Search your library for a basic land card, put it onto the battlefield",
+# also land-type searches ("for a Forest card and put that card onto ...").
 _LAND_FETCH = re.compile(
-    r"search your library for [^.]*land card[^.]*?put [^.]*onto the battlefield",
+    r"search your library for ([^.]*?(?:land|plains|island|swamp|mountain|forest)"
+    r"[^.]*?) cards?[^.]*?put [^.]*onto the battlefield",
     re.IGNORECASE)
+# Fetch lands (Evolving Wilds, Fabled Passage, the Landscapes): the land
+# itself makes little or no mana; it is swapped for a basic from the library.
+_FETCH_LAND = re.compile(
+    r"sacrifice [^.]*: search your library for (?:a|an|up to one) basic ([^.]*?) card"
+    r"[^.]*put it onto the battlefield", re.IGNORECASE)
+_BASIC_TYPE_COLOR = {"plains": "W", "island": "U", "swamp": "B",
+                     "mountain": "R", "forest": "G"}
+
+
+def fetch_land_colors(text):
+    """Colours of basics a fetch land can find ('basic land' = any colour);
+    empty if the land is not a fetch land."""
+    m = _FETCH_LAND.search(text)
+    if not m:
+        return frozenset()
+    return basic_type_colors(m.group(1))
+
+
+def basic_type_colors(phrase):
+    """'basic Plains, Island, or Swamp' -> {W,U,B}; any '... land' -> all."""
+    words = re.findall(r"[a-z]+", phrase.lower())
+    if "land" in words:
+        return frozenset("WUBRGC")
+    return frozenset(_BASIC_TYPE_COLOR[w] for w in words if w in _BASIC_TYPE_COLOR)
 
 
 def make_sim_card(rec, wincons, commander_norm=None):
     land = card_is_land(rec)
-    generic, pips = parse_mana_cost(rec.get("mana_cost") or "")
+    # Adventure/split/MDFC costs are joined "front // back": cast the front.
+    generic, pips = parse_mana_cost((rec.get("mana_cost") or "").split(" // ")[0])
     type_line = (rec.get("type_line") or "").split("//")[0]
     text = rec.get("oracle_text") or ""
     permanent = any(t in type_line for t in PERMANENT_TYPES)
     ramp_produces = frozenset()
     if not land and permanent and rec.get("produced_mana"):
         ramp_produces = frozenset(c for c in rec["produced_mana"] if c in "WUBRGC")
-    fetches_land = (not land) and bool(_LAND_FETCH.search(text))
+    fetch = None if land else _LAND_FETCH.search(text)
+    fetches_land = basic_type_colors(fetch.group(1)) if fetch else frozenset()
     key = norm(rec["name"])
     front = norm(rec["name"].split(" // ")[0])
     return {
@@ -74,6 +107,7 @@ def make_sim_card(rec, wincons, commander_norm=None):
         "is_land": land,
         "produces": land_produces(rec) if land else frozenset(),
         "etb_tapped": land_etb_tapped(rec) if land else False,
+        "fetch_colors": fetch_land_colors(text) if land else frozenset(),
         "mv": int(rec.get("cmc") or 0),
         "generic": generic,
         "pips": pips,
@@ -238,12 +272,27 @@ def simulate(deck, games, on_play, seed, commander=None):
                 have = set()
                 for prod, _ in battlefield:
                     have |= prod
+                def fetchable(l):
+                    return [b for b in library if b["is_land"] and is_basic(b["name"])
+                            and b["produces"] & l["fetch_colors"]]
+                def effective(l):
+                    if not l["fetch_colors"]:
+                        return l["produces"]
+                    return l["produces"].union(*(b["produces"] for b in fetchable(l)))
                 def score(l):
-                    return (len(l["produces"] & (needed - have)),
-                            not l["etb_tapped"], len(l["produces"]))
+                    prod = effective(l)
+                    tapped = l["etb_tapped"] or bool(l["fetch_colors"])
+                    return (len(prod & (needed - have)), not tapped, len(prod))
                 land = max(lands_in_hand, key=score)
                 hand.remove(land)
-                battlefield.append((land["produces"], land["etb_tapped"]))
+                basics = fetchable(land) if land["fetch_colors"] else []
+                if basics:
+                    # crack it at once: the basic arrives tapped
+                    basic = max(basics, key=lambda b: len(b["produces"] & (needed - have)))
+                    library.remove(basic)
+                    battlefield.append((basic["produces"], True))
+                else:
+                    battlefield.append((land["produces"], land["etb_tapped"]))
             else:
                 if turn <= 5:
                     st["missed_drop"][turn] += 1
@@ -295,7 +344,8 @@ def simulate(deck, games, on_play, seed, commander=None):
                         ramp_turn = turn
                 if c["fetches_land"]:
                     basic = next((l for l in library if l["is_land"]
-                                  and is_basic(l["name"])), None)
+                                  and is_basic(l["name"])
+                                  and l["produces"] & c["fetches_land"]), None)
                     if basic is not None:
                         library.remove(basic)
                         battlefield.append((basic["produces"], True))
