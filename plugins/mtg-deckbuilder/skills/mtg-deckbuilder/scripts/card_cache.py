@@ -111,14 +111,20 @@ def make_record(card, owned_printing=None):
 
 
 def fetch_batch(names):
-    """POST /cards/collection for up to 75 names. Returns (found, not_found)."""
+    """POST /cards/collection for up to 75 names. Returns (found, not_found).
+
+    The collection endpoint rejects full "Front // Back" names (Moxfield's
+    format for DFC/adventure/prepare cards), so only the front face is sent;
+    not_found reports the caller's original name."""
     found, not_found = [], []
     for i in range(0, len(names), BATCH_SIZE):
         chunk = names[i:i + BATCH_SIZE]
-        payload = {"identifiers": [{"name": n} for n in chunk]}
+        sent = {norm(n.split(" // ")[0]): n for n in chunk}
+        payload = {"identifiers": [{"name": n.split(" // ")[0]} for n in chunk]}
         result = _request(f"{API}/cards/collection", payload)
         found.extend(result.get("data", []))
-        not_found.extend(nf.get("name") for nf in result.get("not_found", []))
+        not_found.extend(sent.get(norm(nf.get("name") or ""), nf.get("name"))
+                         for nf in result.get("not_found", []))
         time.sleep(DELAY)
     return found, not_found
 

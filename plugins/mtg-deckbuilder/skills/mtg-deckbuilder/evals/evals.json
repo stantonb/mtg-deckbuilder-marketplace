@@ -1,0 +1,41 @@
+{
+  "skill_name": "mtg-deckbuilder",
+  "evals": [
+    {
+      "id": 0,
+      "name": "constructed-60-kitchen",
+      "prompt": "Build me one 60-card kitchen-table deck from my collection export at evals/files/collection.csv. Casual power level, no restrictions beyond only using cards I own (basic lands are fine to add). I want a Moxfield-importable decklist saved as a .txt file, and a single self-contained HTML report explaining the build decisions, the playtesting you did, and the deck's strengths and weaknesses.",
+      "expected_output": "A 60-card deck using only owned cards + basics, a timestamped Moxfield-format .txt, and one self-contained HTML report with decisions, playtest statistics and matchup analysis.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": [
+        "A decklist .txt exists and every non-blank line parses as Moxfield format ('N Card Name' or 'N Card Name (SET) number')",
+        "The main deck contains exactly 60 cards",
+        "Every nonbasic card is in the collection CSV and its count does not exceed the owned count",
+        "No nonbasic card exceeds 4 copies (kitchen-table copy limit)",
+        "An HTML report exists and loads no external http(s) scripts/styles/images (renders offline)",
+        "The report contains build-decision, mana-curve, playtest-statistics, sample-game, and strengths/weaknesses sections",
+        "The report includes quantitative playtest numbers (keepable-hand or mulligan percentage)"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "league-40x2-simultaneous",
+      "prompt": "From my collection export at evals/files/collection.csv, build TWO 40-card sealed-league decks (17 lands each) using ONLY cards from the Lorwyn Eclipsed set (set code ECL), plus any basic lands. Both decks must be buildable at the same time: across the two decks, no card may be used more times than I own it. Make them genuinely different strategies. Deliver a Moxfield-importable .txt decklist for each deck and ONE self-contained HTML report covering both decks with playtest results and a ranked comparison.",
+      "expected_output": "Two distinct 40-card ECL-only decks with zero over-usage across both (simultaneous policy), two timestamped Moxfield .txt files, one self-contained HTML report with playtests and ranking.",
+      "files": [
+        "evals/files/collection.csv"
+      ],
+      "expectations": [
+        "Two decklist .txt files exist and every non-blank line parses as Moxfield format",
+        "Each main deck contains exactly 40 cards",
+        "Each deck contains exactly 17 lands",
+        "Every nonbasic card is owned in set ECL according to the collection CSV printings",
+        "Across both decks combined, no nonbasic card is used more times than owned (simultaneous overlap policy)",
+        "Exactly one HTML report exists and loads no external http(s) scripts/styles/images (renders offline)",
+        "The report contains playtest statistics for both decks and a ranked comparison section"
+      ]
+    }
+  ]
+}

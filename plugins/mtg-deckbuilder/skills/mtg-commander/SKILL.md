@@ -142,7 +142,8 @@ python3 $CORE/scripts/goldfish.py --deck $WORK/deck1.txt \
 `--commander` moves one copy to the command zone (library = 99) and
 reports `commander_avg_cast_turn`; mana rocks/dorks and land-fetch spells
 are modelled as sources from the following turn (`ramp_deployed_by_t3_pct`,
-`avg_mana_sources_t4`).
+`avg_mana_sources_t4`); fetch lands (Evolving Wilds, Fabled Passage, the
+Landscapes) are cracked on play for a tapped basic of a needed colour.
 
 Then narrate 2-3 short **four-player pod** games (one paragraph + lesson
 each): one where the deck is the archenemy and eats a sweeper, one against
